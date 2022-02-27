@@ -75,6 +75,9 @@ class Geotagger:
         seconds = round((decimal - degrees  - minutes / 60.0 ) * 3600.0, 12)
         return (degrees, minutes, seconds)
 
+    def get_status(self):
+        return self.last_gps_msg.status
+
 
 
 

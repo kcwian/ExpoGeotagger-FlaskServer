@@ -30,9 +30,16 @@ def image():
             geotagger.geotag(file_path)
             img_base64 = base64.b64encode(open(file_path, "rb").read()).decode("ascii")
             return jsonify({"base64" : img_base64, "name" : file_name})
-
   return jsonify(["Error"])
+
+@app.route('/dgps', methods=["GET"])
+def dgps():
+  if request.method == "GET":
+        status = geotagger.get_status()
+        dgps.counter += 1
+        return jsonify({"status" : dgps.counter})
+dgps.counter = 0
 
 if __name__ == '__main__':
   geotagger = Geotagger()
-  app.run(host='0.0.0.0')
+  app.run(host='0.0.0.0', threaded=True)
