@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # license removed for brevity
+import base64
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import NavSatStatus, NavSatFix
@@ -32,7 +33,7 @@ class Geotagger:
         self.delay = 15
         self.update()
 
-    def geotag(self, file_s):
+    def geotag(self, file_s, platform):
             exif_dict = piexif.load(file_s)
             if exif_dict['GPS'] is None:
                 exif_dict['GPS'] = []
@@ -55,7 +56,10 @@ class Geotagger:
                     piexif.GPSIFD.GPSAltitudeRef: (int(0))
             }
             exif_dict['GPS'] = gps_ifd
-            exif_bytes = piexif.dump(exif_dict)
+            if platform == "android":
+                exif_bytes = piexif.dump({"GPS":gps_ifd})
+            else:
+                exif_bytes = piexif.dump(exif_dict)
             piexif.insert(exif_bytes, file_s)
 
 

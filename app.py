@@ -22,12 +22,13 @@ def hello_name():
 def image():
   if request.method == "POST":
         if request.files:
+            platform = request.form["platform"]
             image = request.files["image"]
             file_name = "IMG-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
             image.save(file_path)
             print("Image saved to ", file_path)
-            geotagger.geotag(file_path)
+            geotagger.geotag(file_path, platform)
             img_base64 = base64.b64encode(open(file_path, "rb").read()).decode("ascii")
             return jsonify({"base64" : img_base64, "name" : file_name})
   return jsonify(["Error"])
