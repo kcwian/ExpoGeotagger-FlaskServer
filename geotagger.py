@@ -32,22 +32,21 @@ class Geotagger:
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         self.update()
+        self.cnt = 0
 
-    def geotag(self, file_s, platform):
+    def geotag(self, file_s, platform, GPS_data):
             exif_dict = piexif.load(file_s)
             if exif_dict['GPS'] is None:
                 exif_dict['GPS'] = []
-            timestamp = datetime.datetime.utcfromtimestamp(float(self.last_gps_msg.header.stamp.secs + (self.last_gps_msg.header.stamp.nsecs * 1e-9)))
-            latitude = longitude = (0,0,0)
-            altitude = 0
-            if np.isnan(self.last_gps_msg.latitude) == False:
-                latitude = self.get_dms_from_decimal(float(self.last_gps_msg.latitude))
-                longitude = self.get_dms_from_decimal(float(self.last_gps_msg.longitude))
-                altitude = self.last_gps_msg.altitude
+            timestamp = datetime.datetime.utcfromtimestamp(float(GPS_data["timestamp"]))
+            latitude = self.get_dms_from_decimal(float(GPS_data["latitude"]))
+            longitude = self.get_dms_from_decimal(float(GPS_data["longitude"]))
+            altitude = -float(GPS_data["altitude"])
             gps_ifd = {
                     piexif.GPSIFD.GPSDateStamp: (timestamp.strftime("%d:%m:%Y")),
                     piexif.GPSIFD.GPSTimeStamp: ((timestamp.hour,1), (timestamp.minute,1), (timestamp.second,1)),
                     piexif.GPSIFD.GPSVersionID: (2,3,0,0),
+                    # piexif.GPSIFD.GPSProcessingMethod: b'0',
                     piexif.GPSIFD.GPSLatitude: ((int(latitude[0]),1),(int(float(latitude[1])*100),100),(int(float(latitude[2])*1000000),1000000)),
                     piexif.GPSIFD.GPSLatitudeRef: 'N' if latitude[0] >= 0 else 'S',
                     piexif.GPSIFD.GPSLongitude: ((int(longitude[0]),1),(int(float(longitude[1])*100),100),(int(float(longitude[2])*1000000),1000000)),
@@ -80,7 +79,10 @@ class Geotagger:
         return (degrees, minutes, seconds)
 
     def get_status(self):
-        return self.last_gps_msg.status
+        return self.last_gps_msg.status.status
+
+    def get_last_msg(self):
+        return self.last_gps_msg
 
 
 

@@ -9,6 +9,7 @@ import time
 import piexif
 import datetime
 from geotagger import Geotagger
+import json
 
 app = Flask(__name__)
 
@@ -24,23 +25,43 @@ def image():
         if request.files:
             platform = request.form["platform"]
             image = request.files["image"]
+            GPS_data = json.loads(request.form["GPS"])
             file_name = "IMG-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
             image.save(file_path)
             print("Image saved to ", file_path)
-            geotagger.geotag(file_path, platform)
+            try:
+              geotagger.geotag(file_path, platform, GPS_data)
+            except Exception as e:
+              print("Error: ", e)
+            print("Geotagged")
             img_base64 = base64.b64encode(open(file_path, "rb").read()).decode("ascii")
+            os.remove(file_path)
+            print("Image deleted")
             return jsonify({"base64" : img_base64, "name" : file_name})
-  return jsonify(["Error"])
+  return "erro", 400
 
 @app.route('/dgps', methods=["GET"])
 def dgps():
   if request.method == "GET":
         status = geotagger.get_status()
-        dgps.counter += 1
-        return jsonify({"status" : dgps.counter})
+        return jsonify({"status" : status})
 dgps.counter = 0
+dgps.status = 0
+
+@app.route('/lastMessage', methods=["GET"])
+def lastMessage():
+  if request.method == "GET":
+        lastMsg = geotagger.get_last_msg()
+        try:
+          jsonData = jsonify({"seq" : lastMsg.header.seq, "status" : lastMsg.status.status, "latitude": lastMsg.latitude, 
+                          "longitude" : lastMsg.longitude, "altitude" : lastMsg.altitude, "timestamp" : lastMsg.header.stamp.secs + lastMsg.header.stamp.nsecs/1e9 })
+        except Exception as e:
+          print(e)
+        return jsonData
 
 if __name__ == '__main__':
   geotagger = Geotagger()
-  app.run(host='0.0.0.0', threaded=True)
+  # geotagger.geotag("./images/test.jpg", "android")
+  # exit(0)
+  app.run(host='0.0.0.0', threaded=False)
