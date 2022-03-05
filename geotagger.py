@@ -41,7 +41,7 @@ class Geotagger:
             timestamp = datetime.datetime.utcfromtimestamp(float(GPS_data["timestamp"]))
             latitude = self.get_dms_from_decimal(float(GPS_data["latitude"]))
             longitude = self.get_dms_from_decimal(float(GPS_data["longitude"]))
-            altitude = -float(GPS_data["altitude"])
+            altitude = float(GPS_data["altitude"])
             gps_ifd = {
                     piexif.GPSIFD.GPSDateStamp: (timestamp.strftime("%d:%m:%Y")),
                     piexif.GPSIFD.GPSTimeStamp: ((timestamp.hour,1), (timestamp.minute,1), (timestamp.second,1)),

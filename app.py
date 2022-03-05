@@ -34,7 +34,7 @@ def image():
               geotagger.geotag(file_path, platform, GPS_data)
             except Exception as e:
               print("Error: ", e)
-            print("Geotagged")
+            print("Image Geotagged")
             img_base64 = base64.b64encode(open(file_path, "rb").read()).decode("ascii")
             os.remove(file_path)
             print("Image deleted")
