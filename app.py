@@ -1,3 +1,4 @@
+import math
 from flask import Flask
 from flask import Flask, flash, request, redirect, url_for
 import os
@@ -53,6 +54,8 @@ dgps.status = 0
 def lastMessage():
   if request.method == "GET":
         lastMsg = geotagger.get_last_msg()
+        if math.isnan(lastMsg.latitude) == True:
+          lastMsg.latitude = lastMsg.longitude = lastMsg.altitude = 0
         try:
           jsonData = jsonify({"seq" : lastMsg.header.seq, "status" : lastMsg.status.status, "latitude": lastMsg.latitude, 
                           "longitude" : lastMsg.longitude, "altitude" : lastMsg.altitude, "timestamp" : lastMsg.header.stamp.secs + lastMsg.header.stamp.nsecs/1e9 })
