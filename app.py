@@ -27,6 +27,10 @@ def image():
             platform = request.form["platform"]
             image = request.files["image"]
             GPS_data = json.loads(request.form["GPS"])
+            try:
+              GPS_data["altitude"] -= float(request.form["altitudeOffset"])
+            except Exception as e:
+              print("Error: ", e)
             file_name = "IMG-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
             image.save(file_path)
