@@ -65,6 +65,4 @@ def lastMessage():
 
 if __name__ == '__main__':
   geotagger = Geotagger()
-  # geotagger.geotag("./images/test.jpg", "android")
-  # exit(0)
-  app.run(host='0.0.0.0', threaded=False)
+  app.run(host='0.0.0.0', threaded=True)
