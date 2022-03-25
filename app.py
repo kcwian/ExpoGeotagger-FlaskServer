@@ -34,7 +34,7 @@ def image():
             file_name = "IMG-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg"
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
             image.save(file_path)
-            print("Image saved to ", file_path)
+            # print("Image saved to ", file_path)
             try:
               geotagger.geotag(file_path, platform, GPS_data)
             except Exception as e:
@@ -42,9 +42,9 @@ def image():
             print("Image Geotagged")
             img_base64 = base64.b64encode(open(file_path, "rb").read()).decode("ascii")
             os.remove(file_path)
-            print("Image deleted")
+            # print("Image deleted")
             return jsonify({"base64" : img_base64, "name" : file_name})
-  return "erro", 400
+  return "error", 400
 
 @app.route('/dgps', methods=["GET"])
 def dgps():
