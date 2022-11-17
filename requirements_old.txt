@@ -5,8 +5,8 @@ camera_calibration==1.15.0
 camera_calibration_parsers==1.11.13
 catkin==0.7.29
 click==8.0.4
-controller_manager==0.18.3
-controller_manager_msgs==0.18.3
+controller_manager
+controller_manager_msgs
 cv_bridge==1.13.0
 dataclasses==0.8
 diagnostic_analysis==1.9.7
